@@ -1,0 +1,69 @@
+---
+mysql_user: "mysql"
+mysql_group: "mysql"
+
+mysql_data_dir_default: "/var/lib/mysql/"
+mysql_data_dir_lock: "{{ mysql_data_dir }}.ansible_mysql_moved"
+mysql_data_dir: "{{ mysql_data_dir_default }}"
+mysql_data_dir_move: false
+
+# Set this to the user ansible is logging in as - should have root
+mysql_python_package_debian: python3-mysqldb
+
+# MySQL connection settings.
+mysql_port: "{{ services.mysql.port }}"
+mysql_bind_address: "{{ services.mysql.listen }}"
+# The following variables have a default value depending on operating system.
+# mysql_pid_file: /var/run/mysqld/mysqld.pid
+# mysql_socket: /var/lib/mysql/mysql.sock
+
+# Log file settings.
+mysql_log_file_group: mysql
+
+# Slow query log settings.
+mysql_slow_query_log_enabled: true
+mysql_slow_query_time: "2"
+# The following variable has a default value depending on operating system.
+# mysql_slow_query_log_file: /var/log/mysql-slow.log
+
+# Memory settings (default values optimized ~512MB RAM).
+mysql_key_buffer_size: "{{ (ansible_memtotal_mb * 0.5) | int | abs }}MB"
+mysql_max_allowed_packet: "{{ (ansible_memtotal_mb / 8) | int | abs }}M"
+mysql_myisam_sort_buffer_size: "{{ (ansible_memtotal_mb / 8) | int | abs }}M"
+mysql_query_cache_size: "{{ (ansible_memtotal_mb / 16) | int | abs }}M"
+mysql_tmp_table_size: "{{ (ansible_memtotal_mb / 16) | int | abs }}M"
+mysql_max_heap_table_size: "{{ (ansible_memtotal_mb / 16) | int | abs }}M"
+
+# InnoDB settings.
+# Set .._buffer_pool_size up to 80% of RAM but beware of setting too high.
+mysql_innodb_buffer_pool_size: "{{ (ansible_memtotal_mb * 0.5) | int | abs }}MB"
+# Set .._log_file_size to 25% of buffer pool size.
+mysql_innodb_log_file_size: "{{ (ansible_memtotal_mb * 8) | int | abs }}MB"
+
+# mysqldump settings.
+mysql_mysqldump_max_allowed_packet: "{{ (ansible_memtotal_mb * 8) | int | abs }}MB"
+
+# Logging settings.
+mysql_log: ""
+# The following variables have a default value depending on operating system.
+# mysql_log_error: /var/log/mysql/mysql.err
+# mysql_syslog_tag: mysql
+
+mysql_config_include_files: []
+#  - src: path/relative/to/playbook/file.cnf
+#  - { src: path/relative/to/playbook/anotherfile.cnf, force: yes }
+
+# Databases.
+mysql_databases: []
+#   - name: example
+#     collation: utf8_general_ci
+#     encoding: utf8
+#     replicate: 1
+
+# Users.
+mysql_users: []
+#   - name: example
+#     host: 127.0.0.1
+#     password: secret
+#     priv: *.*:USAGE
+

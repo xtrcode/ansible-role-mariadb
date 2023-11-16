@@ -1,0 +1,61 @@
+---
+- name: Ensure mysql is stopped
+  ansible.builtin.service:
+    name: "{{ mysql_daemon }}"
+    state: stopped
+
+- name: Stat source
+  ansible.builtin.stat:
+    path: "{{ mysql_data_dir_default }}"
+  register: src
+
+- name: Check if source exists
+  ansible.builtin.fail:
+    msg: "mysql source directory ({{ mysql_data_dir_default }}) not present!"
+  when: src.stat.exists is false or src.stat.isdir is false
+
+- name: Stat destination
+  ansible.builtin.stat:
+    path: "{{ mysql_data_dir }}"
+  register: dst
+
+- name: Create destination
+  ansible.builtin.file:
+    path: "{{ mysql_data_dir }}"
+    state: directory
+    owner: "{{ mysql_user }}"
+    group: "{{ mysql_group }}"
+    mode: "0700"
+  when: dst.stat.exists is false or dst.stat.isdir is false
+
+- name: Move data
+  ansible.builtin.copy:
+    remote_src: true
+    src: "{{ mysql_data_dir_default }}"
+    dest: "{{ mysql_data_dir }}"
+    owner: "{{ mysql_user }}"
+    group: "{{ mysql_group }}"
+    mode: "0700"
+
+- name: Delete source
+  ansible.builtin.file:
+    path: "{{ mysql_data_dir_default }}"
+    state: absent
+
+- name: Create symlink from source to destination
+  ansible.builtin.file:
+    src: "{{ mysql_data_dir }}"
+    dest: "{{ mysql_data_dir_default[:-1] }}"
+    owner: "{{ mysql_user }}"
+    group: "{{ mysql_group }}"
+    mode: "0700"
+    state: link
+
+- name: Create lock file
+  ansible.builtin.file:
+    path: "{{ mysql_data_dir_lock }}"
+    mode: "0700"
+    state: touch
+  notify:
+    - Restart mysql
+    - Check reachabillity

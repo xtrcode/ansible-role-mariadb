@@ -1,0 +1,22 @@
+galaxy_info:
+  author: "xtrcode"
+  description: "A customizable MariaDB role"
+  license: "license (MIT)"
+  min_ansible_version: "2.1"
+
+  platforms:
+    - name: Debian
+      versions:
+        - "bookworm"
+
+  galaxy_tags:
+    - database
+    - db
+    - mysql
+    - mariadb
+    - sql
+    - linux
+    - debian
+
+dependencies:
+  - name: geerlingguy.mysql

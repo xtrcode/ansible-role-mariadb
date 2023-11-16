@@ -1,0 +1,21 @@
+---
+# tasks file for mariadb
+- name: Install
+  ansible.builtin.include_role:
+    name: geerlingguy.mysql
+
+- name: Stat lock file
+  ansible.builtin.stat:
+    path: "{{ mysql_data_dir_lock }}"
+  register: lock
+
+- name: Move data directory
+  ansible.builtin.include_tasks: move.yml
+  when: mysql_data_dir_move and mysql_data_dir != mysql_data_dir_default and lock.stat.exists is false
+
+- name: Ensure mysql is started
+  ansible.builtin.service:
+    name: "{{ mysql_daemon }}"
+    state: started
+  notify:
+    - Check reachabillity

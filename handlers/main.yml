@@ -1,0 +1,10 @@
+---
+# handlers file for mariadb
+- name: Restart mysql
+  ansible.builtin.service:
+    name: "{{ mysql_daemon }}"
+    state: restarted
+
+- name: Check reachabillity
+  ansible.builtin.command:
+    cmd: mysqladmin ping -h  "{{ mysql_bind_address }}"
